@@ -1,6 +1,5 @@
 package dungeon.gui;
 
-import dungeon.engine.GameEngine;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,11 +13,9 @@ import javafx.stage.Stage;
  * NOTE: Do NOT run this class directly in IntelliJ - run 'RunGame' instead.
  */
 public class GameGUI extends Application {
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         BorderPane root = FXMLLoader.load(getClass().getResource("game_gui.fxml"));
-
         primaryStage.setScene(new Scene(root, 800, 800));
         primaryStage.setTitle("MiniDungeon Game");
         primaryStage.show();

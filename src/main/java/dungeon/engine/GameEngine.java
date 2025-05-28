@@ -2,18 +2,17 @@ package dungeon.engine;
 
 import javafx.scene.text.Text;
 
+
 public class GameEngine {
 
     /**
      * An example board to store the current game state.
-     *
      * Note: depending on your game, you might want to change this from 'int' to String or something?
      */
     private Cell[][] map;
 
     /**
      * Creates a square game board.
-     *
      * @param size the width and height.
      */
     public GameEngine(int size) {
@@ -34,7 +33,6 @@ public class GameEngine {
 
     /**
      * The size of the current game.
-     *
      * @return this is both the width and the height.
      */
     public int getSize() {
@@ -43,7 +41,6 @@ public class GameEngine {
 
     /**
      * The map of the current game.
-     *
      * @return the map, which is a 2d array.
      */
     public Cell[][] getMap() {
@@ -56,5 +53,7 @@ public class GameEngine {
     public static void main(String[] args) {
         GameEngine engine = new GameEngine(10);
         System.out.printf("The size of map is %d * %d\n", engine.getSize(), engine.getSize());
+
+        }
+
     }
-}
