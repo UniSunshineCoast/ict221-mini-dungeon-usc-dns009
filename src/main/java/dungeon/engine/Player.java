@@ -1,4 +1,4 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 
 public class Player {
@@ -101,7 +101,14 @@ public class Player {
 
     // Player movement
     public String playerMovement(String direction, GameBoard board) {
-        StringBuilder message = new StringBuilder("Moved " + direction.toUpperCase());
+        StringBuilder message = new StringBuilder("Moved ");
+        switch (direction) {
+            case "u" -> message.append("up");
+            case "d" -> message.append("down");
+            case "l" -> message.append("left");
+            case "r" -> message.append("right");
+            default -> message.append(direction.toUpperCase()); // For unexpected inputs
+        }
 
         // Handle movement logic
         int newX = x, newY = y;
@@ -137,8 +144,8 @@ public class Player {
         }
 
         // Display attack string if a ranged mutant is nearby
-        String attackMessage = checkNearbyRangedMutants(board);
-        message.append(attackMessage);
+        String rangedAttackMessage = checkNearbyRangedMutants(board);
+        message.append(rangedAttackMessage);
 
         return message.toString();
     }

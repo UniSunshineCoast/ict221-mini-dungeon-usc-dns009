@@ -1,4 +1,4 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 import java.io.*;
 import java.time.LocalDate;

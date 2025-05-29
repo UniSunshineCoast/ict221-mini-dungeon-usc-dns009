@@ -1,10 +1,9 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 public class ItemLadder implements Item {
     private GameBoard board;
 
-
-    ItemLadder(GameBoard board) {
+    public ItemLadder(GameBoard board) {
         this.board = board;
     }
 

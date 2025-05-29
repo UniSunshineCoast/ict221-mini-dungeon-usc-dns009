@@ -1,4 +1,4 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 public class LeaderboardEntry {
     private final String name;

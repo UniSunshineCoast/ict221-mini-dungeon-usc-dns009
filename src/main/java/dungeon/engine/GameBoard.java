@@ -1,6 +1,7 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 import java.util.Random;
+
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
@@ -51,15 +52,20 @@ public class GameBoard {
     }
 
     private void placeItem(Item item, int count, Random rand) {
-        for (int i = 0; i < count; i++) {
-            int x, y;
-            do {
-                x = rand.nextInt(SIZE);
-                y = rand.nextInt(SIZE);
-            } while (!(tiles[x][y] instanceof TileOpen)); // Ensure only open tiles receive items
-            ((TileOpen) tiles[x][y]).setItem(item); // Store item within tile
+        int placed = 0; // Track successfully placed items
+
+        while (placed < count) {
+            int x = rand.nextInt(SIZE);
+            int y = rand.nextInt(SIZE);
+
+            // Check if it's an open tile AND doesn't already contain an item
+            if (tiles[x][y] instanceof TileOpen && !((TileOpen) tiles[x][y]).hasItem()) {
+                ((TileOpen) tiles[x][y]).setItem(item); // Store item within tile
+                placed++; // Increase the count of successfully placed items
+            }
         }
     }
+
 
     public Tile getTile(int x, int y) {
         return tiles[x][y];

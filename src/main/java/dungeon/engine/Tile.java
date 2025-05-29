@@ -1,4 +1,4 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 public abstract class Tile {
     protected boolean walkable;

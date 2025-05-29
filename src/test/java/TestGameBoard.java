@@ -1,6 +1,8 @@
 package dungeon.textgame;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import dungeon.engine.*;
 import org.junit.jupiter.api.Test;
 
 public class TestGameBoard {

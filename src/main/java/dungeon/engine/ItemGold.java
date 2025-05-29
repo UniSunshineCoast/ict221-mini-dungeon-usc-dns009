@@ -1,4 +1,4 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 public class ItemGold implements Item {
     // Data

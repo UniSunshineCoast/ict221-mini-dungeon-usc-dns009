@@ -1,31 +1,12 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 import java.io.*;
-import java.util.Scanner;
 
 public class GameSave {
     private static final String SAVE_FILE = "savegame.txt";
 
     public static void saveGame(Player player, GameBoard board, int steps) {
         File saveFile = new File(SAVE_FILE);
-
-        // Check if save exists and confirm overwrite
-        if (saveFile.exists()) {
-            System.out.println("A save file already exists. Overwrite? (yes/no)");
-            Scanner scanner = new Scanner(System.in);
-            String choice = scanner.nextLine().toLowerCase();
-            if (!choice.equals("yes")) {
-                System.out.println("Save aborted.");
-                return;
-            }
-
-            // Consume any extra input that might linger
-            scanner.nextLine();
-            if (!choice.equals("yes")) {
-                System.out.println("Save aborted.");
-                return;
-            }
-        }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(SAVE_FILE))) {
             writer.write(player.getName() + "," + player.getHealth() + "," + player.getScore() + "," +

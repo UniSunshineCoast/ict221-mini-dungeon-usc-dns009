@@ -35,6 +35,11 @@
             </HBox>
 
             <TextArea fx:id="gameTextArea" prefHeight="150" prefWidth="300"/>
+
+            <TextField fx:id="playerNameField" promptText="Enter player name" />
+            <TextField fx:id="difficultyField" promptText="Enter difficulty (1-5)" />
+            <Button fx:id="startGameButton" text="Start Game" />
+
         </VBox>
     </left>
 </BorderPane>

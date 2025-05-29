@@ -1,6 +1,9 @@
 package dungeon.textgame;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import dungeon.engine.Leaderboard;
+import dungeon.engine.LeaderboardEntry;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package dungeon.textgame;
+package dungeon.engine;
 
 // Maze item interface
 public interface Item {

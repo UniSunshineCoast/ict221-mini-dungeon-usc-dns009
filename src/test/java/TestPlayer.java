@@ -1,6 +1,8 @@
 package dungeon.textgame;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import dungeon.engine.Player;
 import org.junit.jupiter.api.Test;
 
 public class TestPlayer {
