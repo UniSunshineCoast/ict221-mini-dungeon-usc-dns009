@@ -1,19 +1,31 @@
 package dungeon.engine;
 
 import java.util.Random;
-
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
+/**
+ * Represents the game board, managing tile placement, entities, and levels.
+ */
 public class GameBoard {
-    private final int SIZE = 10; // Fixed board size
+    private static final int SIZE = 10; // Fixed board size
     private Tile[][] tiles;
     private int traps, gold, potions, meleeMutants, rangedMutants;
     private int gameBoardLevel;
     private int difficulty;
 
+    /**
+     * Constructs a game board with specified entity counts and difficulty level.
+     * @param traps        The number of traps.
+     * @param gold         The amount of gold.
+     * @param potions      The number of health potions.
+     * @param meleeMutants The number of melee mutants.
+     * @param rangedMutants The number of ranged mutants.
+     * @param gameBoardLevel The initial game level.
+     * @param difficulty   The difficulty level.
+     */
     public GameBoard(int traps, int gold, int potions, int meleeMutants, int rangedMutants, int gameBoardLevel, int difficulty) {
         this.traps = traps;
         this.gold = gold;
@@ -28,128 +40,165 @@ public class GameBoard {
         populateEntities(); // Place items dynamically
     }
 
+    /**
+     * Generates the dungeon layout with walls and open tiles.
+     */
     public void generateBoard() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                // Place walls on the border
-                if (i == 0 || i == SIZE - 1 || j == 0 || j == SIZE - 1) {
-                    tiles[i][j] = new TileClosed();
-                } else {
-                    tiles[i][j] = new TileOpen(); // Open tiles for movement & items
-                }
+                tiles[i][j] = (i == 0 || i == SIZE - 1 || j == 0 || j == SIZE - 1) ? new TileClosed() : new TileOpen();
             }
         }
     }
 
+    /**
+     * Populates the dungeon with items and enemies.
+     */
     private void populateEntities() {
         Random rand = new Random();
         placeItem(new ItemTrap(2), this.traps, rand);
         placeItem(new ItemGold(2), gold, rand);
         placeItem(new ItemHealthPotion(4), potions, rand);
-        placeItem(new ItemMeleeMutant(2,2), meleeMutants, rand);
-        placeItem(new ItemRangedMutant(2,2), this.rangedMutants, rand);
+        placeItem(new ItemMeleeMutant(2, 2), meleeMutants, rand);
+        placeItem(new ItemRangedMutant(2, 2), this.rangedMutants, rand);
         placeItem(new ItemLadder(this), 1, rand);
     }
 
+    /**
+     * Places items at random positions on the board.
+     * @param item  The item to be placed.
+     * @param count The number of instances to place.
+     * @param rand  The random generator for placement.
+     */
     private void placeItem(Item item, int count, Random rand) {
-        int placed = 0; // Track successfully placed items
+        int placed = 0;
 
         while (placed < count) {
             int x = rand.nextInt(SIZE);
             int y = rand.nextInt(SIZE);
 
-            // Check if it's an open tile AND doesn't already contain an item
             if (tiles[x][y] instanceof TileOpen && !((TileOpen) tiles[x][y]).hasItem()) {
-                ((TileOpen) tiles[x][y]).setItem(item); // Store item within tile
-                placed++; // Increase the count of successfully placed items
+                ((TileOpen) tiles[x][y]).setItem(item);
+                placed++;
             }
         }
     }
 
-
+    /**
+     * Gets a tile at the specified coordinates.
+     * @param x The X-coordinate.
+     * @param y The Y-coordinate.
+     * @return The tile at the given position.
+     */
     public Tile getTile(int x, int y) {
         return tiles[x][y];
     }
 
+    /**
+     * Prints the dungeon board to the console, marking the player's position.
+     * @param playerX The player's X-coordinate.
+     * @param playerY The player's Y-coordinate.
+     */
     public void printBoard(int playerX, int playerY) {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (i == playerX && j == playerY) {
-                    System.out.print('P'); // Player icon
-                } else {
-                    System.out.print(tiles[i][j].getSymbol());
-                }
+                System.out.print((i == playerX && j == playerY) ? 'P' : tiles[i][j].getSymbol());
             }
             System.out.println();
         }
     }
 
+    /**
+     * Advances the game level, regenerating the board while preserving the player's position.
+     * @param player The player advancing to the next level.
+     */
     public void incrementGameLevel(Player player) {
-        // Increment the game level
-        this.gameBoardLevel++;
-        this.difficulty += 2;
-        this.rangedMutants = this.difficulty;
+        gameBoardLevel++;
+        difficulty += 2;
+        rangedMutants = difficulty;
 
         System.out.println("You made it to level " + gameBoardLevel + " of the dungeon!");
 
-        // Record the player/ladder's coordinates
-        int ladderX = player.getx();
-        int ladderY = player.gety();
+        int ladderX = player.getX();
+        int ladderY = player.getY();
 
-        // Generate and populate new board
         tiles = new Tile[SIZE][SIZE];
         generateBoard();
         populateEntities();
 
-        // Set player to where the ladder was in the previous level
-        player.setx(ladderX);
-        player.sety(ladderY);
+        player.setX(ladderX);
+        player.setY(ladderY);
     }
 
-    // Properly resets the board before loading a save
+    /**
+     * Clears the game board, resetting it to an empty state.
+     */
     public void clearBoard() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                tiles[i][j] = new TileOpen(); // Replaces all tiles with empty TileOpen()
+                tiles[i][j] = new TileOpen();
             }
         }
     }
 
+    /**
+     * Gets the size of the board.
+     * @return The board size.
+     */
     public int getSize() {
         return SIZE;
     }
 
+    /**
+     * Gets the current game level.
+     * @return The game level.
+     */
     public int getGameBoardLevel() {
         return gameBoardLevel;
     }
 
+    /**
+     * Sets the current game level.
+     * @param gameBoardLevel The new game level.
+     */
     public void setGameBoardLevel(int gameBoardLevel) {
         this.gameBoardLevel = gameBoardLevel;
     }
 
+    /**
+     * Gets the current difficulty level.
+     * @return The difficulty level.
+     */
     public int getDifficulty() {
         return difficulty;
     }
 
+    /**
+     * Sets the current difficulty level.
+     * @param difficulty The new difficulty level.
+     */
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
     }
 
-    // GUI
+    /**
+     * Gets the graphical representation of a tile for the game UI.
+     * @param x      The X-coordinate.
+     * @param y      The Y-coordinate.
+     * @param player The player object.
+     * @return A StackPane containing the tile's display.
+     */
     public StackPane getCellDisplay(int x, int y, Player player) {
         Tile tile = getTile(x, y);
         StackPane cellPane = new StackPane();
 
-        // Define the cell background
         Rectangle rect = new Rectangle(40, 40);
         rect.setFill(tile instanceof TileClosed ? Color.DARKGRAY : Color.LIGHTGRAY);
         rect.setStroke(Color.BLACK);
 
-        // Define the text content inside the cell (player, items, etc.)
-        Text cellText = new Text(String.valueOf(tile.getSymbol())); // Converts char to String
+        Text cellText = new Text(String.valueOf(tile.getSymbol()));
 
-        // If it's the player's position, highlight it!
-        if (x == player.getx() && y == player.gety()) {
+        if (x == player.getX() && y == player.getY()) {
             rect.setFill(Color.BLUE);
         }
 

@@ -2,15 +2,22 @@ package dungeon.engine;
 
 import java.io.*;
 
+/**
+ * Manages saving and loading game data.
+ */
 public class GameSave {
     private static final String SAVE_FILE = "savegame.txt";
 
+    /**
+     * Saves the current game state to a file.
+     * @param player The player whose data is saved.
+     * @param board  The game board state.
+     * @param steps  The remaining steps in the game.
+     */
     public static void saveGame(Player player, GameBoard board, int steps) {
-        File saveFile = new File(SAVE_FILE);
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(SAVE_FILE))) {
             writer.write(player.getName() + "," + player.getHealth() + "," + player.getScore() + "," +
-                    player.getx() + "," + player.gety() + "," + board.getGameBoardLevel() + "," +
+                    player.getX() + "," + player.getY() + "," + board.getGameBoardLevel() + "," +
                     board.getDifficulty() + "," + steps);
             writer.newLine();
 
@@ -32,6 +39,12 @@ public class GameSave {
         }
     }
 
+    /**
+     * Loads game data from a file.
+     * @param board  The game board where state is restored.
+     * @param player The player whose data is restored.
+     * @return The number of remaining steps from the saved state.
+     */
     public static int loadGame(GameBoard board, Player player) {
         File saveFile = new File(SAVE_FILE);
 
@@ -49,7 +62,7 @@ public class GameSave {
             int y = Integer.parseInt(data[4]);
             int gameLevel = Integer.parseInt(data[5]);
             int difficulty = Integer.parseInt(data[6]);
-            int steps = Integer.parseInt(data[7]); // Track steps separately!
+            int steps = Integer.parseInt(data[7]);
 
             // Clear and regenerate board
             board.clearBoard();
@@ -61,10 +74,10 @@ public class GameSave {
             player.setName(name);
             player.setHealth(health);
             player.setScore(score);
-            player.setx(x);
-            player.sety(y);
+            player.setX(x);
+            player.setY(y);
 
-            // Restore items on board
+            // Restore items on the board
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] itemData = line.split(",");
@@ -75,8 +88,8 @@ public class GameSave {
                 Item item = switch (itemType) {
                     case "ItemGold" -> new ItemGold(2);
                     case "ItemHealthPotion" -> new ItemHealthPotion(4);
-                    case "ItemMeleeMutant" -> new ItemMeleeMutant(2,2);
-                    case "ItemRangedMutant" -> new ItemRangedMutant(2,2);
+                    case "ItemMeleeMutant" -> new ItemMeleeMutant(2, 2);
+                    case "ItemRangedMutant" -> new ItemRangedMutant(2, 2);
                     case "ItemTrap" -> new ItemTrap(2);
                     case "ItemLadder" -> new ItemLadder(board);
                     default -> null;
@@ -87,14 +100,11 @@ public class GameSave {
                 }
             }
 
-            reader.close();
-
-            // Print completion message
             System.out.println("Game loaded successfully!");
-            return steps; // Return step count separately
+            return steps;
         } catch (IOException | NumberFormatException e) {
             System.out.println("Error loading game: " + e.getMessage());
-            return -1; // Indicates an error occurred
+            return -1;
         }
     }
 }

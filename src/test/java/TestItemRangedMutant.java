@@ -7,21 +7,28 @@ import dungeon.engine.Player;
 import org.junit.jupiter.api.Test;
 import java.util.Random;
 
+/**
+ * Unit tests for the ItemRangedMutant class.
+ */
 public class TestItemRangedMutant {
 
+    /**
+     * Tests whether the ranged mutant's attack correctly reduces the player's health if hit.
+     * Ensures health remains unchanged if the attack misses.
+     */
     @Test
     public void testAttemptAttack() {
         Player player = new Player("Test", 10, 0, 0, 1);
-        ItemRangedMutant rangedMutant = new ItemRangedMutant(3, 2); // Mutant deals 3 damage, gives 2 score
+        ItemRangedMutant rangedMutant = new ItemRangedMutant(2, 2); // Mutant deals 2 damage, gives 2 score
 
-        // Force attack to happen by bypassing randomness
-        Random rand = new Random();
-        if (rand.nextBoolean()) {
+        // Simulate the attack outcome using controlled randomness
+        boolean hit = new Random().nextBoolean();
+
+        if (hit) {
             rangedMutant.attemptAttack(player);
-            assertEquals(2, player.getHealth(), "Player's health should decrease by 2 if hit");
+            assertEquals(8, player.getHealth(), "Player's health should decrease by 2 if hit.");
         } else {
-            // If missed, health should remain unchanged
-            assertEquals(10, player.getHealth(), "Player's health should remain unchanged if mutant misses");
+            assertEquals(10, player.getHealth(), "Player's health should remain unchanged if mutant misses.");
         }
     }
 }

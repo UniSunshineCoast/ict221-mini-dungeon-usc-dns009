@@ -1,72 +1,71 @@
 package dungeon.gui;
 
-import dungeon.engine.Leaderboard;
-import dungeon.engine.LeaderboardEntry;
-import dungeon.engine.GameSave;
-import dungeon.engine.Player;
-import dungeon.engine.GameBoard;
+import dungeon.engine.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 
+/**
+ * Manages the game's GUI and player interactions.
+ */
 public class Controller {
     @FXML private GridPane gridPane;
     @FXML private Button upButton, downButton, leftButton, rightButton, saveButton, loadButton, quitButton;
     @FXML private Label healthLabel, scoreLabel, stepsLabel, levelLabel;
     @FXML private TextArea gameTextArea;
-    @FXML private TextField playerNameField;
-    @FXML private TextField difficultyField;
+    @FXML private TextField playerNameField, difficultyField;
     @FXML private Button startGameButton;
 
     private GameBoard board;
     private Player player;
     private int steps = 100;
-    private Leaderboard leaderboard = new Leaderboard();
+    private final Leaderboard leaderboard = new Leaderboard();
 
+    /**
+     * Initializes the game and sets up the GUI components.
+     */
     @FXML
     public void initialize() {
-        // Create the GameBoard and default player
         board = new GameBoard(5, 5, 2, 3, 2, 1, 3);
         player = new Player("Hero", 10, 0, 8, 1);
 
-        // Set up the "Start Game" button to trigger startGame()
         startGameButton.setOnAction(event -> startGame());
 
-        // Initialize GUI and buttons
         updateGUI();
         setupButtonActions();
     }
 
-
+    /**
+     * Updates the graphical user interface based on the game state.
+     * Refreshes the board display, updates labels, and checks for victory or game over conditions.
+     */
     private void updateGUI() {
         gridPane.getChildren().clear();
 
-        // Loop through board and add cells to GUI
         for (int i = 0; i < board.getSize(); i++) {
             for (int j = 0; j < board.getSize(); j++) {
-                StackPane cellDisplay = board.getCellDisplay(i, j, player);
-                gridPane.add(cellDisplay, j, i);
+                gridPane.add(board.getCellDisplay(i, j, player), j, i);
             }
         }
 
-        // Update player stats in the GUI
         healthLabel.setText("Health: " + player.getHealth());
         scoreLabel.setText("Score: " + player.getScore());
         stepsLabel.setText("Steps: " + steps);
         levelLabel.setText("Dungeon Level: " + board.getGameBoardLevel());
 
-        // **NEW:** Check for victory condition
         if (board.getGameBoardLevel() >= 3) {
+            leaderboard.addEntry(player.getName(), player.getScore());
             victory();
         }
 
-        // Check for both game over conditions (health or steps reaching zero)
         if (player.getHealth() <= 0 || steps <= 0) {
             gameOver();
         }
     }
 
+    /**
+     * Sets up button actions for movement, saving, loading, and quitting the game.
+     */
     private void setupButtonActions() {
         upButton.setOnAction(event -> movePlayer("u"));
         downButton.setOnAction(event -> movePlayer("d"));
@@ -78,95 +77,98 @@ public class Controller {
         quitButton.setOnAction(event -> System.exit(0));
     }
 
+    /**
+     * Starts a new game, creating a player and setting up the board based on user input.
+     */
     private void startGame() {
         String playerName = playerNameField.getText().trim();
-        int difficulty;
+        int difficulty = parseDifficulty(difficultyField.getText().trim());
 
-        try {
-            difficulty = Integer.parseInt(difficultyField.getText().trim());
-            if (difficulty < 1 || difficulty > 5) {
-                difficulty = 3; // Default if invalid
-            }
-        } catch (NumberFormatException e) {
-            difficulty = 3; // Default if not a valid number
-        }
-
-        // Create new player & game board based on input
         player = new Player(playerName.isEmpty() ? "Hero" : playerName, 10, 0, 1, 1);
-        board = new GameBoard(5, 5, 2, 3, difficulty, 1, difficulty); // Set difficulty level
+        board = new GameBoard(5, 5, 2, 3, difficulty, 1, difficulty);
 
-        // Clear input fields & update GUI
         playerNameField.clear();
         difficultyField.clear();
         updateGUI();
         gameTextArea.setText("Welcome, " + player.getName() + "! Difficulty set to " + difficulty + ".");
     }
 
-    private void movePlayer(String direction) {
-        String movementResult = player.playerMovement(direction, board); // Movement feedback
-
-        steps--;
-        updateGUI();
-
-        // Show both movement result + attack alerts in the GUI text box
-        gameTextArea.setText(movementResult);
+    /**
+     * Parses the difficulty input and ensures it falls within valid bounds.
+     * @param input The difficulty input as a string.
+     * @return A valid difficulty level between 1 and 5, defaulting to 3 if invalid.
+     */
+    private int parseDifficulty(String input) {
+        try {
+            int difficulty = Integer.parseInt(input);
+            return (difficulty >= 1 && difficulty <= 5) ? difficulty : 3;
+        } catch (NumberFormatException e) {
+            return 3;
+        }
     }
 
+    /**
+     * Moves the player in the specified direction and updates the game state.
+     * @param direction The movement direction (u, d, l, r).
+     */
+    private void movePlayer(String direction) {
+        gameTextArea.setText(player.playerMovement(direction, board));
+        steps--;
+        updateGUI();
+    }
+
+    /**
+     * Saves the current game state.
+     */
     private void saveGame() {
         GameSave.saveGame(player, board, steps);
         gameTextArea.setText("Game saved successfully!");
     }
 
+    /**
+     * Loads a previously saved game state.
+     */
     private void loadGame() {
         int loadedSteps = GameSave.loadGame(board, player);
-        if (loadedSteps != -1) {
-            steps = loadedSteps;
-            gameTextArea.setText("Game loaded successfully!");
-        } else {
-            gameTextArea.setText("No saved game found.");
-        }
-        updateGUI(); // Refresh board & stats after loading
+        gameTextArea.setText((loadedSteps != -1) ? "Game loaded successfully!" : "No saved game found.");
+        if (loadedSteps != -1) steps = loadedSteps;
+        updateGUI();
     }
 
+    /**
+     * Displays a game-over message and prompts the user to retry or exit.
+     */
     private void gameOver() {
         String message = (player.getHealth() <= 0) ? "You ran out of health! Game Over." : "You ran out of steps! Game Over.";
         gameTextArea.setText(message);
-
-        // Create an alert dialog asking to retry
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Game Over");
-        alert.setHeaderText("You have lost the game!");
-        alert.setContentText("Would you like to retry?");
-
-        ButtonType retryButton = new ButtonType("Retry");
-        ButtonType exitButton = new ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(retryButton, exitButton);
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == retryButton) {
-                restartGame();
-            } else {
-                System.exit(0);  // Exit the game
-            }
-        });
+        showEndGameDialog("Game Over", "You have lost the game!", "Would you like to retry?");
     }
 
+    /**
+     * Displays a victory message and prompts the user to retry or exit.
+     */
     private void victory() {
-        String message = "Congratulations! You escaped the dungeon and won!";
-        gameTextArea.setText(message + "\n" + getLeaderboardText());
+        gameTextArea.setText("Congratulations! You escaped the dungeon and won!\n" + getLeaderboardText());
+        leaderboard.addEntry(player.getName(), player.getScore());
+        showEndGameDialog("Victory!", "You escaped the dungeon!", "Would you like to retry?");
+    }
 
-        // Create an alert dialog asking to retry
+    /**
+     * Displays a dialog box for retry or exit options after game completion.
+     * @param title   The title of the dialog.
+     * @param header  The header message.
+     * @param content The body text of the dialog.
+     */
+    private void showEndGameDialog(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Victory!");
-        alert.setHeaderText("You escaped the dungeon!");
-        alert.setContentText("Would you like to retry?");
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
 
-        ButtonType retryButton = new ButtonType("Retry");
-        ButtonType exitButton = new ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(retryButton, exitButton);
+        alert.getButtonTypes().setAll(new ButtonType("Retry"), new ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE));
 
         alert.showAndWait().ifPresent(response -> {
-            if (response == retryButton) {
+            if (response.getText().equals("Retry")) {
                 restartGame();
             } else {
                 System.exit(0);
@@ -174,28 +176,27 @@ public class Controller {
         });
     }
 
+    /**
+     * Retrieves the formatted leaderboard as a string.
+     * @return A leaderboard summary with names, scores, and dates.
+     */
     private String getLeaderboardText() {
         StringBuilder leaderboardText = new StringBuilder("\n--- Leaderboard ---\n");
-
-        for (LeaderboardEntry entry : leaderboard.getEntries()) {
-            leaderboardText.append("# ").append(entry.getName())
-                    .append(" - Score: ").append(entry.getScore())
-                    .append(" - Date: ").append(entry.getDate())
-                    .append("\n");
-        }
-
-        leaderboardText.append("-------------------\n");
-
-        return leaderboardText.toString();
+        leaderboard.getEntries().forEach(entry ->
+                leaderboardText.append("# ").append(entry.getName())
+                        .append(" - Score: ").append(entry.getScore())
+                        .append(" - Date: ").append(entry.getDate()).append("\n"));
+        return leaderboardText.append("-------------------\n").toString();
     }
 
+    /**
+     * Restarts the game, resetting the player and board.
+     */
     private void restartGame() {
         board = new GameBoard(5, 5, 2, 3, 2, 1, 3);
         player = new Player("Hero", 10, 0, 8, 1);
-        steps = 100;  // Reset steps
-
-        updateGUI();  // Refresh UI
+        steps = 100;
+        updateGUI();
         gameTextArea.setText("Game restarted! Try again.");
     }
 }
-

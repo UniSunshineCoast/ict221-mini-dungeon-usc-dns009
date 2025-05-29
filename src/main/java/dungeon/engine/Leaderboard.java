@@ -4,15 +4,24 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * Manages the leaderboard, storing the top player scores.
+ */
 public class Leaderboard {
     private static final String FILE_PATH = "leaderboard.txt";
     private List<LeaderboardEntry> entries;
 
+    /**
+     * Constructs a leaderboard and loads existing entries.
+     */
     public Leaderboard() {
         entries = new ArrayList<>();
         loadLeaderboard();
     }
 
+    /**
+     * Loads leaderboard entries from a file.
+     */
     private void loadLeaderboard() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
@@ -30,12 +39,17 @@ public class Leaderboard {
         }
     }
 
+    /**
+     * Adds a new player entry to the leaderboard.
+     * @param playerName The player's name.
+     * @param score      The player's score.
+     */
     public void addEntry(String playerName, int score) {
         String date = LocalDate.now().toString();
         entries.add(new LeaderboardEntry(playerName, score, date));
 
         // Sort entries by score, highest first
-        entries.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
+        entries.sort(Comparator.comparingInt(LeaderboardEntry::getScore).reversed());
 
         // Keep only the top 5 scores
         if (entries.size() > 5) {
@@ -45,7 +59,19 @@ public class Leaderboard {
         saveLeaderboard();
     }
 
+    /**
+     * Clears all entries from the leaderboard.
+     * This method resets the leaderboard.
+     * Used after the leaderboard unit test to make sure it doesn't interfere
+     * with the game's leaderboard.
+     */
+    public void clearEntries() {
+        entries.clear(); // Removes all stored leaderboard entries
+    }
 
+    /**
+     * Saves the leaderboard to a file.
+     */
     private void saveLeaderboard() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
             int limit = Math.min(entries.size(), 5); // Only save up to 5 entries
@@ -59,7 +85,9 @@ public class Leaderboard {
         }
     }
 
-
+    /**
+     * Displays the leaderboard entries in the console.
+     */
     public void displayLeaderboard() {
         System.out.println("\n--- Leaderboard ---");
         int rank = 1;
@@ -70,8 +98,11 @@ public class Leaderboard {
         System.out.println("-------------------\n");
     }
 
+    /**
+     * Retrieves a copy of the leaderboard entries.
+     * @return A list of the top leaderboard entries.
+     */
     public List<LeaderboardEntry> getEntries() {
-        return new ArrayList<>(entries); // Return a copy to avoid unintended modifications
+        return new ArrayList<>(entries); // Return a copy to prevent unintended modifications
     }
 }
-
