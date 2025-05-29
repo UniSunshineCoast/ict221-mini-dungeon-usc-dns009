@@ -2,7 +2,7 @@ package dungeon.textgame;
 
 import dungeon.engine.GameEngine;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for the GameEngine class.
@@ -10,13 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestGameEngine {
 
     /**
-     * Tests whether GameEngine correctly returns the expected board size.
+     * Tests whether GameEngine initializes correctly.
      */
     @Test
-    void testGetSize() {
-        GameEngine gameEngine = new GameEngine(10);
+    void testGameEngineInitialization() {
+        GameEngine gameEngine = new GameEngine(); // No arguments now
 
-        assertEquals(10, gameEngine.getSize(), "GameEngine should return the correct board size.");
+        // Ensure GameEngine object is successfully created
+        assertNotNull(gameEngine, "GameEngine should be initialized without errors.");
     }
 }
-

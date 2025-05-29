@@ -1,50 +1,11 @@
 package dungeon.engine;
 
-import javafx.scene.text.Text;
 import java.util.Scanner;
 
 /**
  * Represents the game engine, which manages the game board and gameplay logic.
  */
 public class GameEngine {
-    private final Cell[][] map;
-
-    /**
-     * Creates a square game board of the specified size.
-     * @param size The width and height of the board.
-     */
-    public GameEngine(int size) {
-        map = new Cell[size][size];
-
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                Cell cell = new Cell();
-                Text text = new Text(i + "," + j);
-                cell.getChildren().add(text);
-                map[i][j] = cell;
-            }
-        }
-
-        // Set corner cells with a different background color
-        map[0][0].setStyle("-fx-background-color: #7baaa4");
-        map[size - 1][size - 1].setStyle("-fx-background-color: #7baaa4");
-    }
-
-    /**
-     * Gets the size of the current game board.
-     * @return The board size, which is both the width and height.
-     */
-    public int getSize() {
-        return map.length;
-    }
-
-    /**
-     * Gets the current game board.
-     * @return The game map, represented as a 2D array of cells.
-     */
-    public Cell[][] getMap() {
-        return map;
-    }
 
     /**
      * Plays the text-based Dungeon Crawler game.
@@ -57,7 +18,7 @@ public class GameEngine {
         while (retry.equals("yes")) {
             // Game introduction
             int steps = 100;
-            System.out.println("Welcome to the Dungeon Crawler! What is your name? ");
+            System.out.println("Welcome to the Dungeon Crawler! What is your name?");
             String playerName = scanner.nextLine();
             System.out.println("How to play: Move with u (up), d (down), l (left), r (right), save (to save the game), load (to load a saved game), or q to quit.");
 
@@ -120,7 +81,7 @@ public class GameEngine {
             // Display leaderboard
             leaderboard.displayLeaderboard();
 
-            System.out.println("Do you wish to retry? (yes/no): ");
+            System.out.println("Do you wish to retry? (yes/no):");
             retry = scanner.nextLine().toLowerCase();
         }
 
