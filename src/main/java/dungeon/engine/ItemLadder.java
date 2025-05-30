@@ -8,6 +8,7 @@ public class ItemLadder implements Item {
 
     /**
      * Constructs an ItemLadder associated with a game board.
+     *
      * @param board The game board in which the ladder exists.
      */
     public ItemLadder(GameBoard board) {
@@ -16,19 +17,34 @@ public class ItemLadder implements Item {
 
     /**
      * Handles player interaction when stepping on the ladder.
-     * Advances the player to the next game level.
+     * This method both returns a descriptive message (for the GUI)
+     * and prints nothing directly so that the text-based game output isn't duplicated.
+     * It advances the game level and includes the new level number in the returned message.
+     *
      * @param player The player interacting with the ladder.
+     * @return A message indicating that the ladder was found and showing the new level.
      */
     @Override
-    public void itemInteraction(Player player) {
-        System.out.println("You found a ladder!");
+    public String itemInteraction(Player player) {
+        // Begin with the initial message.
+        String message = "You found a ladder!";
 
-        // Increment game level and redraw map
+        // Advance the game level using the board's logic.
         board.incrementGameLevel(player);
+
+        // Retrieve the new game level.
+        int newLevel = board.getGameBoardLevel();
+
+        // Append the new level information to the message.
+        message += " Advanced to level " + newLevel + "!";
+
+        // Return the complete message for the GUI (and for the text game to print).
+        return message;
     }
 
     /**
-     * Returns the symbol representing this item.
+     * Returns the symbol representing this ladder.
+     *
      * @return 'L' as the ladder symbol.
      */
     @Override

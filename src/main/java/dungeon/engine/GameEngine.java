@@ -42,15 +42,18 @@ public class GameEngine {
 
             // Game loop
             while (steps > 0 && board.getGameBoardLevel() < 3 && player.getHealth() > 0) {
-                System.out.println("Make your move. Health: " + player.getHealth() + ", Score: " + player.getScore() + ". Steps remaining: " + steps + ". Type 'help' for instructions.");
+                System.out.println("Make your move. Health: " + player.getHealth() +
+                        ", Score: " + player.getScore() +
+                        ". Steps remaining: " + steps +
+                        ". Type 'help' for instructions.");
                 String move = scanner.nextLine().toLowerCase();
 
-                // Handle quit command
+                // Handle quit command.
                 if (move.equals("q")) {
                     break;
                 }
 
-                // Handle save/load commands
+                // Handle save/load commands.
                 if (move.equals("save")) {
                     GameSave.saveGame(player, board, steps);
                 } else if (move.equals("load")) {
@@ -58,10 +61,13 @@ public class GameEngine {
                     if (loadedSteps != -1) {
                         steps = loadedSteps;
                     }
+                } else {
+                    // Capture and print the player's movement message.
+                    String moveMessage = player.playerMovement(move, board);
+                    System.out.println(moveMessage);
                 }
 
-                // Move player
-                player.playerMovement(move, board);
+                // Print the board.
                 board.printBoard(player.getX(), player.getY());
                 steps--;
             }

@@ -77,53 +77,62 @@ public class Player {
 
     /**
      * Moves the player in the specified direction and interacts with the tile.
-     * @param direction The direction of movement (u, d, l, r).
-     * @param board     The game board containing tiles.
-     * @return A message confirming movement or interaction effects.
+     * It returns a message describing the movement, any item interactions, and
+     * results of nearby enemy (ranged mutant) attacks.
+     *
+     * @param direction The direction of movement ("u" for up, "d" for down, "l" for left, "r" for right).
+     * @param board     The game board containing the tiles.
+     * @return A descriptive message of the movement and interactions.
      */
     public String playerMovement(String direction, GameBoard board) {
         StringBuilder message = new StringBuilder("Moved ");
+
+        // Append the direction text.
         message.append(switch (direction) {
             case "u" -> "up";
             case "d" -> "down";
             case "l" -> "left";
             case "r" -> "right";
-            default -> direction.toUpperCase(); // Unexpected inputs
+            default -> direction.toUpperCase(); // For any unexpected input
         });
 
-        // Determine new position
+        // Determine new coordinates based on the direction.
         int newX = x, newY = y;
         if ("u".equals(direction)) newX--;
         if ("d".equals(direction)) newX++;
         if ("l".equals(direction)) newY--;
         if ("r".equals(direction)) newY++;
 
-        // Validate movement
+        // Validate movement: if the new tile is a wall (closed), return an error message.
         Tile newTile = board.getTile(newX, newY);
         if (newTile instanceof TileClosed) {
             return "You can't move there, there's a wall!";
         }
 
-        // Update player position
+        // Update player's coordinates.
         x = newX;
         y = newY;
 
-        // Handle item interactions
+        // Check if the new tile is an open tile and if it contains an item.
         if (newTile instanceof TileOpen) {
             TileOpen openTile = (TileOpen) newTile;
             if (openTile.hasItem()) {
                 Item item = openTile.getItem();
-                item.itemInteraction(this);
-
-                // Remove item after interaction (except traps)
+                // Capture the message returned by the item's interaction.
+                String itemMessage = item.itemInteraction(this);
+                // Remove the item after interaction unless it's a trap.
                 if (!(item instanceof ItemTrap)) {
                     openTile.setItem(null);
                 }
+                // Append the item interaction message on a new line.
+                message.append("\n").append(itemMessage);
             }
         }
 
-        // Append attack message if near a ranged mutant
+        // Append any nearby ranged mutant attack messages.
         message.append(checkNearbyRangedMutants(board));
+
+        // Return the complete message.
         return message.toString();
     }
 

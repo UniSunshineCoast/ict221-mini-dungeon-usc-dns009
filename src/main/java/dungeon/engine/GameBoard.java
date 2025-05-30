@@ -117,7 +117,8 @@ public class GameBoard {
         difficulty += 2;
         rangedMutants = difficulty;
 
-        System.out.println("You made it to level " + gameBoardLevel + " of the dungeon!");
+        // Comment out or remove this print statement to avoid duplicate messages in the text game:
+        // System.out.println("You made it to level " + gameBoardLevel + " of the dungeon!");
 
         int ladderX = player.getX();
         int ladderY = player.getY();

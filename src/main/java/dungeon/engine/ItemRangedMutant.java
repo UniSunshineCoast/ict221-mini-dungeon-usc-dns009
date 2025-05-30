@@ -11,7 +11,8 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Constructs an ItemRangedMutant with specified attack damage and score reward.
-     * @param rangedMutantDamage    The amount of damage the mutant deals.
+     *
+     * @param rangedMutantDamage     The amount of damage the mutant deals.
      * @param rangedMutantScoreReward The score reward when defeated.
      */
     public ItemRangedMutant(int rangedMutantDamage, int rangedMutantScoreReward) {
@@ -21,6 +22,7 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Gets the mutant's attack damage.
+     *
      * @return The amount of damage dealt.
      */
     public int getRangedMutantDamage() {
@@ -29,6 +31,7 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Gets the score reward for defeating this mutant.
+     *
      * @return The amount of score gained.
      */
     public int getRangedMutantScoreReward() {
@@ -37,6 +40,7 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Sets the mutant's attack damage.
+     *
      * @param rangedMutantDamage The new attack damage value.
      */
     public void setRangedMutantDamage(int rangedMutantDamage) {
@@ -45,6 +49,7 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Sets the score reward for defeating this mutant.
+     *
      * @param rangedMutantScoreReward The new score reward value.
      */
     public void setRangedMutantScoreReward(int rangedMutantScoreReward) {
@@ -52,18 +57,29 @@ public class ItemRangedMutant implements Item {
     }
 
     /**
-     * Handles player interaction when encountering this mutant.
+     * Handles player interaction when encountering this ranged mutant.
      * Defeating the mutant increases the player's score.
+     * This method both prints a message to the console (for text-based gameplay)
+     * and returns the same message as a String for the GUI to display.
+     *
      * @param player The player interacting with the mutant.
+     * @return A message indicating that the ranged mutant was defeated and the score reward.
      */
     @Override
-    public void itemInteraction(Player player) {
+    public String itemInteraction(Player player) {
+        // Increase player's score.
         player.adjustScore(rangedMutantScoreReward);
-        System.out.println("You defeated the ranged mutant, +" + rangedMutantScoreReward + "!");
+
+        // Construct the interaction message.
+        String message = "You defeated the ranged mutant, +" + rangedMutantScoreReward + "!";
+
+        // Return the message for the GUI to display.
+        return message;
     }
 
     /**
      * Returns the symbol representing this mutant.
+     *
      * @return 'R' as the ranged mutant symbol.
      */
     @Override
@@ -73,6 +89,7 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Attempts an attack on the player with a 50% chance of success.
+     *
      * @param player The player being targeted.
      * @return True if the attack hits, false if missed.
      */
@@ -80,12 +97,11 @@ public class ItemRangedMutant implements Item {
         boolean hit = new Random().nextBoolean(); // 50% chance of hitting
 
         if (hit) {
+            // Apply damage only if the attack hits.
             player.adjustHealth(-rangedMutantDamage);
-            System.out.println("A ranged mutant shoots you from afar! -" + rangedMutantDamage + " HP.");
-        } else {
-            System.out.println("A ranged mutant takes a shot but misses!");
         }
 
         return hit;
     }
+
 }

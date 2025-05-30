@@ -8,9 +8,11 @@ public interface Item {
 
     /**
      * Handles interaction between the player and the item.
+     * Returns a message describing the interaction.
      * @param player The player interacting with the item.
+     * @return A message about what happened.
      */
-    void itemInteraction(Player player);
+    String itemInteraction(Player player);
 
     /**
      * Returns the symbol representing this item.
