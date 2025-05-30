@@ -1,9 +1,12 @@
 package dungeon.engine;
 
 import java.util.Random;
+import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 /**
@@ -184,6 +187,7 @@ public class GameBoard {
 
     /**
      * Gets the graphical representation of a tile for the game UI.
+     *
      * @param x      The X-coordinate.
      * @param y      The Y-coordinate.
      * @param player The player object.
@@ -193,17 +197,89 @@ public class GameBoard {
         Tile tile = getTile(x, y);
         StackPane cellPane = new StackPane();
 
+        // Create the background rectangle for the cell.
         Rectangle rect = new Rectangle(40, 40);
-        rect.setFill(tile instanceof TileClosed ? Color.DARKGRAY : Color.LIGHTGRAY);
         rect.setStroke(Color.BLACK);
 
-        Text cellText = new Text(String.valueOf(tile.getSymbol()));
-
-        if (x == player.getX() && y == player.getY()) {
-            rect.setFill(Color.BLUE);
+        // Set the background color based on tile type.
+        if (tile instanceof TileClosed) {
+            rect.setFill(Color.DARKGRAY);
+        } else {
+            rect.setFill(Color.LIGHTGRAY);
         }
 
-        cellPane.getChildren().addAll(rect, cellText);
+        // Define a Node for the content that will be displayed on top of the rectangle.
+        Node content;
+
+        // If the tile is open and contains an item, then decide which image to display.
+        if (tile instanceof TileOpen && ((TileOpen) tile).hasItem()) {
+            Item item = ((TileOpen) tile).getItem();
+            if (item instanceof ItemTrap) {
+                Image trapImage = new Image(getClass().getResourceAsStream("/trap_icon.png"));
+                ImageView trapView = new ImageView(trapImage);
+                trapView.setFitWidth(40);
+                trapView.setFitHeight(40);
+                content = trapView;
+            } else if (item instanceof ItemMeleeMutant) {
+                Image meleeMutantImage = new Image(getClass().getResourceAsStream("/melee mutant image.jpg"));
+                ImageView meleeMutantView = new ImageView(meleeMutantImage);
+                meleeMutantView.setFitWidth(40);
+                meleeMutantView.setFitHeight(40);
+                content = meleeMutantView;
+            } else if (item instanceof ItemRangedMutant) {
+                Image rangedMutantImage = new Image(getClass().getResourceAsStream("/ranged mutant image.jpg"));
+                ImageView rangedMutantView = new ImageView(rangedMutantImage);
+                rangedMutantView.setFitWidth(40);
+                rangedMutantView.setFitHeight(40);
+                content = rangedMutantView;
+            } else if (item instanceof ItemHealthPotion) {
+                Image healthPotionImage = new Image(getClass().getResourceAsStream("/health potion.jpg"));
+                ImageView healthPotionView = new ImageView(healthPotionImage);
+                healthPotionView.setFitWidth(40);
+                healthPotionView.setFitHeight(40);
+                content = healthPotionView;
+            } else if (item instanceof ItemLadder) {
+                Image ladderImage = new Image(getClass().getResourceAsStream("/ladder.jpg"));
+                ImageView ladderView = new ImageView(ladderImage);
+                ladderView.setFitWidth(40);
+                ladderView.setFitHeight(40);
+                content = ladderView;
+            } else if (item instanceof ItemGold) {
+                Image goldImage = new Image(getClass().getResourceAsStream("/gold.png"));
+                ImageView goldView = new ImageView(goldImage);
+                goldView.setFitWidth(40);
+                goldView.setFitHeight(40);
+                content = goldView;
+            } else {
+                // Fallback: show the tile's symbol as text.
+                content = new Text(String.valueOf(tile.getSymbol()));
+            }
+        }
+        // If the tile is closed (a wall), use the wall image.
+        else if (tile instanceof TileClosed) {
+            Image wallImage = new Image(getClass().getResourceAsStream("/wall.jpg"));
+            ImageView wallView = new ImageView(wallImage);
+            wallView.setFitWidth(40);
+            wallView.setFitHeight(40);
+            content = wallView;
+        }
+        // Otherwise, show the tile's symbol as text.
+        else {
+            content = new Text(String.valueOf(tile.getSymbol()));
+        }
+
+        // Add the background and the content.
+        cellPane.getChildren().addAll(rect, content);
+
+        // If the player is at this tile, overlay the hero image.
+        if (x == player.getX() && y == player.getY()) {
+            Image heroImage = new Image(getClass().getResourceAsStream("/hero.png"));
+            ImageView heroView = new ImageView(heroImage);
+            heroView.setFitWidth(40);
+            heroView.setFitHeight(40);
+            cellPane.getChildren().add(heroView);
+        }
+
         return cellPane;
     }
 }
