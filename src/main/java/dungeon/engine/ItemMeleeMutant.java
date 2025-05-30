@@ -9,7 +9,6 @@ public class ItemMeleeMutant implements Item {
 
     /**
      * Constructs an ItemMeleeMutant with specified attack damage and score reward.
-     *
      * @param meleeMutantDamage      The amount of damage the mutant deals.
      * @param meleeMutantScoreReward The score reward when defeated.
      */
@@ -20,7 +19,6 @@ public class ItemMeleeMutant implements Item {
 
     /**
      * Gets the mutant's attack damage.
-     *
      * @return The amount of damage dealt.
      */
     public int getMeleeMutantDamage() {
@@ -29,7 +27,6 @@ public class ItemMeleeMutant implements Item {
 
     /**
      * Gets the score reward for defeating this mutant.
-     *
      * @return The amount of score gained.
      */
     public int getMeleeMutantScoreReward() {
@@ -38,7 +35,6 @@ public class ItemMeleeMutant implements Item {
 
     /**
      * Sets the mutant's attack damage.
-     *
      * @param meleeMutantDamage The new attack damage value.
      */
     public void setMeleeMutantDamage(int meleeMutantDamage) {
@@ -47,7 +43,6 @@ public class ItemMeleeMutant implements Item {
 
     /**
      * Sets the score reward for defeating this mutant.
-     *
      * @param meleeMutantScoreReward The new score reward value.
      */
     public void setMeleeMutantScoreReward(int meleeMutantScoreReward) {
@@ -60,7 +55,6 @@ public class ItemMeleeMutant implements Item {
      * and returns the same message as a String for the GUI to display.
      * It decreases the player’s health by the mutant’s damage value and
      * rewards the player with the mutant's score reward.
-     *
      * @param player The player interacting with the mutant.
      * @return A message indicating the outcome of the encounter.
      */
@@ -81,7 +75,6 @@ public class ItemMeleeMutant implements Item {
 
     /**
      * Returns the symbol representing this mutant.
-     *
      * @return 'M' as the melee mutant symbol.
      */
     @Override

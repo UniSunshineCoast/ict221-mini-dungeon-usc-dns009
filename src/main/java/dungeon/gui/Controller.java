@@ -4,6 +4,11 @@ import dungeon.engine.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  * Manages the game's GUI and player interactions.
@@ -13,26 +18,94 @@ public class Controller {
     @FXML private Button upButton, downButton, leftButton, rightButton, saveButton, loadButton, quitButton;
     @FXML private Label healthLabel, scoreLabel, stepsLabel, levelLabel;
     @FXML private TextArea gameTextArea;
-    @FXML private TextField playerNameField, difficultyField;
-    @FXML private Button startGameButton;
 
     private GameBoard board;
     private Player player;
     private int steps = 100;
     private final Leaderboard leaderboard = new Leaderboard();
+    private int difficultySetting = 3; // default difficulty
 
     /**
      * Initializes the game and sets up the GUI components.
      */
     @FXML
     public void initialize() {
-        board = new GameBoard(5, 5, 2, 3, 2, 1, 3);
-        player = new Player("Hero", 10, 0, 8, 1);
+        // Create a temporary placeholder player so that showSetupDialog can update the name.
+        player = new Player("", 10, 0, 1, 1);
 
-        startGameButton.setOnAction(event -> startGame());
+        // Disable movement buttons until setup is complete.
+        upButton.setDisable(true);
+        downButton.setDisable(true);
+        leftButton.setDisable(true);
+        rightButton.setDisable(true);
+
+        // Show the modal setup dialog (blocks until player enters data).
+        showSetupDialog();
+
+        // Now that the modal has updated the player’s name and the difficultySetting field,
+        // initialize the game state with startGame().
+        startGame();
+
+        // Re-enable movement controls now that the game state is ready.
+        upButton.setDisable(false);
+        downButton.setDisable(false);
+        leftButton.setDisable(false);
+        rightButton.setDisable(false);
 
         updateGUI();
         setupButtonActions();
+    }
+
+
+    /**
+     * Displays a modal dialog that forces the player to enter their name
+     * and choose a difficulty (1–5) before they can begin playing.
+     */
+    private void showSetupDialog() {
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        dialogStage.setTitle("Game Setup");
+
+        // Create UI controls.
+        Label nameLabel = new Label("Enter your name:");
+        TextField nameField = new TextField();
+        nameField.setPromptText("Name");
+
+        Label diffLabel = new Label("Select Difficulty (1-5):");
+        ComboBox<String> difficultyComboBox = new ComboBox<>();
+        difficultyComboBox.getItems().addAll("1", "2", "3", "4", "5");
+        difficultyComboBox.setPromptText("Choose Difficulty");
+
+        Button setupStartButton = new Button("Start Game");
+
+        // Handle button action.
+        setupStartButton.setOnAction(event -> {
+            String name = nameField.getText().trim();
+            String chosenDifficulty = difficultyComboBox.getValue();
+
+            if (name.isEmpty() || chosenDifficulty == null || chosenDifficulty.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Missing Information");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter your name and select a difficulty.");
+                alert.showAndWait();
+            } else {
+                // Store the new player name and difficulty.
+                player.setName(name);
+                difficultySetting = Integer.parseInt(chosenDifficulty);
+                System.out.println("Player name: " + name);
+                System.out.println("Difficulty: " + difficultySetting);
+                dialogStage.close();
+            }
+        });
+
+        VBox dialogVBox = new VBox(10);
+        dialogVBox.setPadding(new Insets(10));
+        dialogVBox.getChildren().addAll(nameLabel, nameField, diffLabel, difficultyComboBox, setupStartButton);
+
+        Scene dialogScene = new Scene(dialogVBox, 300, 200);
+        dialogStage.setScene(dialogScene);
+        dialogStage.showAndWait();
     }
 
     /**
@@ -81,30 +154,21 @@ public class Controller {
      * Starts a new game, creating a player and setting up the board based on user input.
      */
     private void startGame() {
-        String playerName = playerNameField.getText().trim();
-        int difficulty = parseDifficulty(difficultyField.getText().trim());
+        // Use the name that was set by the modal dialog.
+        String playerName = player.getName();
+        // Fallback to "Hero" if, for some reason, the name is still empty.
+        if (playerName.isEmpty()) {
+            playerName = "Hero";
+        }
+        // Use the difficulty setting that was updated by the modal dialog.
+        int difficulty = difficultySetting;
 
-        player = new Player(playerName.isEmpty() ? "Hero" : playerName, 10, 0, 1, 1);
+        // Create a new Player and GameBoard using the modally obtained values.
+        player = new Player(playerName, 10, 0, 8, 1);
         board = new GameBoard(5, 5, 2, 3, difficulty, 1, difficulty);
 
-        playerNameField.clear();
-        difficultyField.clear();
         updateGUI();
         gameTextArea.setText("Welcome, " + player.getName() + "! Difficulty set to " + difficulty + ".");
-    }
-
-    /**
-     * Parses the difficulty input and ensures it falls within valid bounds.
-     * @param input The difficulty input as a string.
-     * @return A valid difficulty level between 1 and 5, defaulting to 3 if invalid.
-     */
-    private int parseDifficulty(String input) {
-        try {
-            int difficulty = Integer.parseInt(input);
-            return (difficulty >= 1 && difficulty <= 5) ? difficulty : 3;
-        } catch (NumberFormatException e) {
-            return 3;
-        }
     }
 
     /**
@@ -148,32 +212,48 @@ public class Controller {
      * Displays a victory message and prompts the user to retry or exit.
      */
     private void victory() {
-        gameTextArea.setText("Congratulations! You escaped the dungeon and won!\n" + getLeaderboardText());
-        leaderboard.addEntry(player.getName(), player.getScore());
+        gameTextArea.setText("Congratulations! You escaped the dungeon and won!");
         showEndGameDialog("Victory!", "You escaped the dungeon!", "Would you like to retry?");
     }
 
     /**
-     * Displays a dialog box for retry or exit options after game completion.
-     * @param title   The title of the dialog.
-     * @param header  The header message.
-     * @param content The body text of the dialog.
-     */
+    * Displays a dialog box for retry or exit options after game completion,
+    * including the leaderboard text above the retry prompt.
+    * @param title   The title of the dialog.
+    * @param header  The header message.
+    * @param content The body text (prompt) of the dialog.
+    */
     private void showEndGameDialog(String title, String header, String content) {
+        String overallContent = getLeaderboardText() + "\n\n" + content;
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(header);
-        alert.setContentText(content);
+        alert.setContentText(overallContent);
 
-        alert.getButtonTypes().setAll(new ButtonType("Retry"), new ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE));
+        alert.getButtonTypes().setAll(new ButtonType("Retry"),
+                new ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE));
 
         alert.showAndWait().ifPresent(response -> {
             if (response.getText().equals("Retry")) {
-                restartGame();
+                resetGame();  // Use resetGame() so that the modal setup dialog appears.
             } else {
                 System.exit(0);
             }
         });
+    }
+
+    /**
+     * Resets the game by forcing the player to re-enter setup information
+     * (name and difficulty), and then reinitializes the game state.
+     */
+    private void resetGame() {
+        // Reset any global game state variables if needed, for example:
+        steps = 100;
+        // Display the setup dialog to prompt the player to enter their name and difficulty.
+        showSetupDialog();
+        // Start the game with the new configuration.
+        startGame();
     }
 
     /**

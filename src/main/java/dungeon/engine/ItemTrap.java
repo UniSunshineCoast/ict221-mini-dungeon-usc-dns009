@@ -8,7 +8,6 @@ public class ItemTrap implements Item {
 
     /**
      * Constructs an ItemTrap with a specified damage value.
-     *
      * @param trapDamage The amount of damage the trap inflicts.
      */
     public ItemTrap(int trapDamage) {
@@ -17,7 +16,6 @@ public class ItemTrap implements Item {
 
     /**
      * Gets the damage amount of this trap.
-     *
      * @return The damage value.
      */
     public int getTrapDamage() {
@@ -26,7 +24,6 @@ public class ItemTrap implements Item {
 
     /**
      * Sets the damage amount for this trap.
-     *
      * @param trapDamage The new damage value.
      */
     public void setTrapDamage(int trapDamage) {
@@ -37,7 +34,6 @@ public class ItemTrap implements Item {
      * Applies the trap's damage effect when a player interacts with it.
      * This method both prints the message to the console (for text-based gameplay)
      * and returns the same message as a String for the GUI to display.
-     *
      * @param player The player affected by the trap.
      * @return A message indicating the trap damage.
      */
@@ -55,7 +51,6 @@ public class ItemTrap implements Item {
 
     /**
      * Returns the symbol representing this trap.
-     *
      * @return 'T' as the trap symbol.
      */
     @Override

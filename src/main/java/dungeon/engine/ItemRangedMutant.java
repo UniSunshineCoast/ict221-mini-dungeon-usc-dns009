@@ -11,7 +11,6 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Constructs an ItemRangedMutant with specified attack damage and score reward.
-     *
      * @param rangedMutantDamage     The amount of damage the mutant deals.
      * @param rangedMutantScoreReward The score reward when defeated.
      */
@@ -22,7 +21,6 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Gets the mutant's attack damage.
-     *
      * @return The amount of damage dealt.
      */
     public int getRangedMutantDamage() {
@@ -31,7 +29,6 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Gets the score reward for defeating this mutant.
-     *
      * @return The amount of score gained.
      */
     public int getRangedMutantScoreReward() {
@@ -40,7 +37,6 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Sets the mutant's attack damage.
-     *
      * @param rangedMutantDamage The new attack damage value.
      */
     public void setRangedMutantDamage(int rangedMutantDamage) {
@@ -49,7 +45,6 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Sets the score reward for defeating this mutant.
-     *
      * @param rangedMutantScoreReward The new score reward value.
      */
     public void setRangedMutantScoreReward(int rangedMutantScoreReward) {
@@ -61,7 +56,6 @@ public class ItemRangedMutant implements Item {
      * Defeating the mutant increases the player's score.
      * This method both prints a message to the console (for text-based gameplay)
      * and returns the same message as a String for the GUI to display.
-     *
      * @param player The player interacting with the mutant.
      * @return A message indicating that the ranged mutant was defeated and the score reward.
      */
@@ -79,7 +73,6 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Returns the symbol representing this mutant.
-     *
      * @return 'R' as the ranged mutant symbol.
      */
     @Override
@@ -89,7 +82,6 @@ public class ItemRangedMutant implements Item {
 
     /**
      * Attempts an attack on the player with a 50% chance of success.
-     *
      * @param player The player being targeted.
      * @return True if the attack hits, false if missed.
      */

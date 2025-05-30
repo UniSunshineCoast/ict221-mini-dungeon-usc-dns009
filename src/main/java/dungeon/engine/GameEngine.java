@@ -46,31 +46,46 @@ public class GameEngine {
                         ", Score: " + player.getScore() +
                         ". Steps remaining: " + steps +
                         ". Type 'help' for instructions.");
+
                 String move = scanner.nextLine().toLowerCase();
 
                 // Handle quit command.
                 if (move.equals("q")) {
                     break;
                 }
-
-                // Handle save/load commands.
-                if (move.equals("save")) {
+                // Handle help command.
+                else if (move.equals("help")) {
+                    System.out.println("Instructions: Use 'u' for up, 'd' for down, 'l' for left, 'r' for right. "
+                            + "Type 'save' to save, 'load' to load a saved game, or 'q' to quit.");
+                    continue; // Skip step decrement since this is not a movement command.
+                }
+                // Handle save command.
+                else if (move.equals("save")) {
                     GameSave.saveGame(player, board, steps);
-                } else if (move.equals("load")) {
+                }
+                // Handle load command.
+                else if (move.equals("load")) {
                     int loadedSteps = GameSave.loadGame(board, player);
                     if (loadedSteps != -1) {
                         steps = loadedSteps;
                     }
-                } else {
-                    // Capture and print the player's movement message.
+                }
+                // Handle valid movement commands.
+                else if (move.equals("u") || move.equals("d") || move.equals("l") || move.equals("r")) {
                     String moveMessage = player.playerMovement(move, board);
                     System.out.println(moveMessage);
                 }
+                // Handle any other invalid command.
+                else {
+                    System.out.println("Invalid command. Type 'help' for instructions.");
+                    continue; // Skip decrementing steps for an invalid command.
+                }
 
-                // Print the board.
+                // Print the board (only if a valid move was processed)
                 board.printBoard(player.getX(), player.getY());
                 steps--;
             }
+
 
             // Determine game outcome
             if (steps == 0) {

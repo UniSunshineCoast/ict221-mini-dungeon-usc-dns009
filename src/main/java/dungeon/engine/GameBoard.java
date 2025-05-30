@@ -120,9 +120,6 @@ public class GameBoard {
         difficulty += 2;
         rangedMutants = difficulty;
 
-        // Comment out or remove this print statement to avoid duplicate messages in the text game:
-        // System.out.println("You made it to level " + gameBoardLevel + " of the dungeon!");
-
         int ladderX = player.getX();
         int ladderY = player.getY();
 
@@ -187,7 +184,6 @@ public class GameBoard {
 
     /**
      * Gets the graphical representation of a tile for the game UI.
-     *
      * @param x      The X-coordinate.
      * @param y      The Y-coordinate.
      * @param player The player object.
